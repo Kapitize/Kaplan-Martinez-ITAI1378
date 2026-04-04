@@ -4,7 +4,7 @@ Computer Vision Course
 MidTerm ReadMe File:
 Project Overview:
 Kaplan Martinez as the Project Manager; Tier level 2
-PackageGuard AI is a computer vision solution designed to automate the quality control process in logistics and warehouse environments. By utilizing Deep Learning, this system identifies structural damage in packages (cracks, tears, moisture, or crushing) in real-time as they move across a conveyor belt.
+PackageGuard AI is a computer vision solution designed to automate the quality control process in logistics and warehouse environments. By utilizing Deep Learning, this is a tier 2 due to the system identifying structural damage in packages (cracks, tears, moisture, or crushing) in real-time as they move across a conveyor belt. As the guide lines in Canvas, this would almost be equivalant to detecting if a person is wearning a face mask as it needs to be identifying a mask, in our case a box, and if it the person is wearing the mask from identification, in our case it would be if our box is in tact or damaged.
 
 The Problem:
 In high-volume distribution centers, manual inspection for package damage is:
