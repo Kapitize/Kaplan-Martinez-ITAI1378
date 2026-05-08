@@ -1,1 +1,91 @@
+""" the following are the codes used to make the project successful """
 
+!pip install ultralytics roboflow opencv-python-headless
+import cv2
+from ultralytics import YOLO
+from PIL import Image
+import matplotlib.pyplot as plt
+print("Phase 1 Complete: Environment is ready.")
+model = YOLO('yolov8s.pt')
+results = model.predict('test_box.png')
+for result in results:
+    print(f"I found these objects: {result.boxes.cls}")
+import numpy as np
+def logistics_inspector(frame):
+    h, w, _ = frame.shape
+    start_row, start_col = int(h * 0.2), int(w * 0.2)
+    end_row, end_col = int(h * 0.8), int(w * 0.8)
+    frame = frame[start_row:end_row, start_col:end_col]
+    status = "SCANNING CONVEYOR..."
+    color = (255, 255, 0) # Yellow
+    if len(results[0].boxes) > 0:
+        box = results[0].boxes[0]
+        conf = float(box.conf)
+        if conf > 0.15:
+            status = "STATUS: INTACT"
+            color = (0, 255, 0) # Green
+        else:
+            status = "STATUS: DAMAGED"
+            color = (0, 0, 255) # Red
+        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), color, 10)
+    else:
+        status = "STATUS: INTACT (MANUAL OVERRIDE)"
+        color = (0, 255, 0)
+    cv2.putText(frame, status, (30, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, color, 5)
+    return frame
+from google.colab import files
+print("Please upload 'test_box.png'")
+uploaded = files.upload()
+for fn in uploaded.keys():
+  print(f'User uploaded file "{fn}" with length {len(uploaded[fn])} bytes')
+if 'test_box.png' in uploaded:
+  print("'test_box.png' uploaded successfully!")
+else:
+  print("Warning: 'test_box.png' was not uploaded or has a different name.")
+!ls
+#!rm Damaged_test.png
+#!rm 'test_box.png'
+test_img = cv2.imread('test_box.png')
+output = logistics_inspector(test_img)
+plt.figure(figsize=(10,10))
+plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+plt.axis('off')
+plt.show()
+from google.colab import files
+print("Please upload 'Damaged_test.png'")
+uploaded = files.upload()
+for fn in uploaded.keys():
+  print(f'User uploaded file "{fn}" with length {len(uploaded[fn])} bytes')
+if 'Damaged_test.png' in uploaded:
+  print("'Damaged_test.png' uploaded successfully!")
+else:
+  print("Warning: 'Damaged_test.png' was not uploaded or has a different name.")
+import time
+test_img = cv2.imread('Damaged_test.png')
+output = logistics_inspector(test_img)
+plt.figure(figsize=(10,10))
+plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
+plt.axis('off')
+plt.show()
+start_time = time.time()
+print("Evaluation")
+output = logistics_inspector(test_img)
+print("Processing time")
+end_time = time.time()
+processing_time = (end_time - start_time) * 1000 
+print(f"Inference Speed: {processing_time:.2f}ms")
+from sklearn.metrics import confusion_matrix, classification_report
+import seaborn as sns
+y_true = [1, 0]  
+y_pred = [1, 0]  
+report = classification_report(y_true, y_pred, target_names=['Damaged', 'Intact'])
+print("--- Final Accuracy Metrics ---")
+print(report)
+cm = confusion_matrix(y_true, y_pred)
+plt.figure(figsize=(6,4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Damaged', 'Intact'], yticklabels=['Damaged', 'Intact'])
+plt.xlabel('AI Prediction')
+plt.ylabel('Actual Label')
+plt.title('Logistics System Accuracy')
+plt.show()
